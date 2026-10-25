@@ -15,6 +15,8 @@
   -->
   <main>
     <div class="cartao" id="produto">
+      <!-- No Instagram o link abre nesta página, numa janela por cima da live; por isso o botão da bolha fica no topo. -->
+      <a class="botao principal escondido" id="abrir-na-bolha">Ver na bolha do Kliq</a>
       <div class="emoji" id="emoji"></div>
       <h1 id="nome"></h1>
       <div class="preco" id="preco"></div>
@@ -23,10 +25,9 @@
       <label for="quantidade">Quantidade</label>
       <input id="quantidade" type="number" min="1" value="1">
 
-      <a class="botao principal" id="abrir-na-bolha">Abrir na bolha do Kliq</a>
-      <a class="botao" id="comprar-pelo-site">Comprar pelo site</a>
-      <a class="botao" href="/kliq/#baixar">Baixar app de teste (Android)</a>
-      <p class="nota">Você está vendo esta página porque o app do Kliq não abriu sozinho. No Android com o app instalado, toque em "Abrir na bolha do Kliq".</p>
+      <a class="botao principal" id="comprar-pelo-site">Comprar pelo site</a>
+      <a class="botao escondido" id="baixar-app" href="/kliq/#baixar">Baixar app de teste (Android)</a>
+      <p class="nota escondido" id="nota-android">Tem o app do Kliq? Toque em "Ver na bolha do Kliq" no topo e depois feche esta janela para voltar à live.</p>
     </div>
     <div class="cartao escondido" id="nao-encontrado">
       <h1>Produto não encontrado</h1>
@@ -47,6 +48,12 @@
       document.getElementById("preco").textContent = formatarPreco(produto.precoEmCentavos);
       document.getElementById("rotulo-da-opcao").textContent = produto.rotuloDaOpcao;
       document.getElementById("abrir-na-bolha").href = linkParaAbrirNaBolha(produto.id);
+      // A bolha só existe no app Android; no iPhone e no computador a compra é só pelo site.
+      if (/Android/i.test(navigator.userAgent)) {
+        for (const id of ["abrir-na-bolha", "baixar-app", "nota-android"]) {
+          document.getElementById(id).classList.remove("escondido");
+        }
+      }
 
       const quantidade = document.getElementById("quantidade");
       const comprar = document.getElementById("comprar-pelo-site");
