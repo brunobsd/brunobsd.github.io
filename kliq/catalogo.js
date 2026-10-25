@@ -18,10 +18,9 @@ function formatarPreco(centavos) {
 }
 
 // Plano B quando o Instagram abre o link no navegador dele: aciona o app pelo esquema kliq://.
-// Sem o app instalado, o Android cai no endereço de reserva (a área de download).
-function linkParaAbrirNaBolha(produtoId) {
-  const reserva = encodeURIComponent(`${location.origin}/kliq/#baixar`);
-  return `intent://p/${produtoId}#Intent;scheme=kliq;package=${PACOTE_DO_APP};S.browser_fallback_url=${reserva};end`;
+// Sem o app instalado, o Android cai no endereço de reserva (por padrão, a área de download).
+function linkParaAbrirNaBolha(produtoId, reserva = `${location.origin}/kliq/#baixar`) {
+  return `intent://p/${produtoId}#Intent;scheme=kliq;package=${PACOTE_DO_APP};S.browser_fallback_url=${encodeURIComponent(reserva)};end`;
 }
 
 // Variante de teste: o mesmo link https do produto, mas entregue direto ao app pelo pacote.

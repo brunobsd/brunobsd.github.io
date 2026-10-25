@@ -63,6 +63,15 @@
         for (const id of ["abrir-na-bolha", "baixar-app", "nota-android", "testes-alternativos"]) {
           document.getElementById(id).classList.remove("escondido");
         }
+        // Tenta pular esta página e ligar a bolha sozinho, uma única vez. Sem o app, a reserva volta
+        // para esta mesma página com ?semapp=1, para não ficar em repetição nem levar ao download.
+        // Se o Instagram bloquear a abertura sem toque, o botão do topo continua como reserva.
+        const parametros = new URLSearchParams(location.search);
+        if (!parametros.has("semapp") && !parametros.has("manual")) {
+          const reserva = new URL(location.href);
+          reserva.searchParams.set("semapp", "1");
+          location.href = linkParaAbrirNaBolha(produto.id, reserva.href);
+        }
       }
 
       const quantidade = document.getElementById("quantidade");
