@@ -24,6 +24,19 @@ function linkParaAbrirNaBolha(produtoId) {
   return `intent://p/${produtoId}#Intent;scheme=kliq;package=${PACOTE_DO_APP};S.browser_fallback_url=${reserva};end`;
 }
 
+// Variante de teste: o mesmo link https do produto, mas entregue direto ao app pelo pacote.
+// Usa o filtro de App Link do app (https://brunobsd.github.io/kliq/p/<id>/) em vez do esquema kliq://.
+function linkDoAppPorHttps(produtoId) {
+  const reserva = encodeURIComponent(`${location.origin}/kliq/#baixar`);
+  return `intent://${location.host}/kliq/p/${produtoId}/#Intent;scheme=https;package=${PACOTE_DO_APP};S.browser_fallback_url=${reserva};end`;
+}
+
+// Variante de teste: tira a página do navegador do Instagram e abre no Chrome,
+// onde o botão da bolha costuma funcionar. A live sai da frente até a pessoa voltar.
+function linkNoChrome(produtoId) {
+  return `intent://${location.host}/kliq/p/${produtoId}/#Intent;scheme=https;package=com.android.chrome;end`;
+}
+
 // Mesmo formato gerado pelo app: id~opcao~quantidade, separados por vírgula.
 function linkDoCheckout(itens) {
   const valor = itens.map((item) => `${item.produtoId}~${item.opcao}~${item.quantidade}`).join(",");

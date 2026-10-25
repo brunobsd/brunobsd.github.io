@@ -28,6 +28,14 @@
       <a class="botao principal" id="comprar-pelo-site">Comprar pelo site</a>
       <a class="botao escondido" id="baixar-app" href="/kliq/#baixar">Baixar app de teste (Android)</a>
       <p class="nota escondido" id="nota-android">Tem o app do Kliq? Toque em "Ver na bolha do Kliq" no topo e depois feche esta janela para voltar à live.</p>
+
+      <!-- Só para o teste: outras formas de acionar o app, para descobrir qual o navegador do Instagram deixa passar. -->
+      <div class="escondido" id="testes-alternativos">
+        <h2>Testes (se o botão do topo não funcionar)</h2>
+        <a class="botao" id="teste-https">Teste 2: abrir o app pelo link https</a>
+        <a class="botao" id="teste-chrome">Teste 3: abrir esta página no Chrome</a>
+        <p class="nota">Teste 3 tira você da live: no Chrome, toque em "Ver na bolha do Kliq" e depois volte ao Instagram. Outra opção: menu ⋮ desta janela → "Abrir no navegador".</p>
+      </div>
     </div>
     <div class="cartao escondido" id="nao-encontrado">
       <h1>Produto não encontrado</h1>
@@ -50,7 +58,9 @@
       document.getElementById("abrir-na-bolha").href = linkParaAbrirNaBolha(produto.id);
       // A bolha só existe no app Android; no iPhone e no computador a compra é só pelo site.
       if (/Android/i.test(navigator.userAgent)) {
-        for (const id of ["abrir-na-bolha", "baixar-app", "nota-android"]) {
+        document.getElementById("teste-https").href = linkDoAppPorHttps(produto.id);
+        document.getElementById("teste-chrome").href = linkNoChrome(produto.id);
+        for (const id of ["abrir-na-bolha", "baixar-app", "nota-android", "testes-alternativos"]) {
           document.getElementById(id).classList.remove("escondido");
         }
       }
