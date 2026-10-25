@@ -37,12 +37,39 @@
         <p class="nota">Teste 3 tira você da live: no Chrome, toque em "Ver na bolha do Kliq" e depois volte ao Instagram. Outra opção: menu ⋮ desta janela → "Abrir no navegador".</p>
       </div>
     </div>
+    <div class="cartao escondido" id="pronto">
+      <h1>Pronto! A bolha está aberta ✅</h1>
+      <p>Arraste esta janela para baixo para voltar à live.</p>
+      <a class="botao" href="?manual=1">Ver o produto aqui de novo</a>
+    </div>
     <div class="cartao escondido" id="nao-encontrado">
       <h1>Produto não encontrado</h1>
       <a class="botao" href="/kliq/">Ver produtos de teste</a>
     </div>
   </main>
   <script>
+    // Depois que o app abre a bolha, esta janela do Instagram continua aberta por cima da live.
+    // Sinal de que o app abriu: a página fica escondida (o Instagram perde a frente) e depois volta.
+    // Aí tenta fechar a janela; se o Instagram ignorar, troca o conteúdo por um aviso curto.
+    let appFoiAcionado = false;
+    let paginaSaiuDaFrente = false;
+    document.addEventListener("visibilitychange", () => {
+      if (!appFoiAcionado) return;
+      if (document.hidden) {
+        paginaSaiuDaFrente = true;
+      } else if (paginaSaiuDaFrente) {
+        window.close();
+        document.getElementById("produto").classList.add("escondido");
+        document.getElementById("pronto").classList.remove("escondido");
+        window.scrollTo(0, 0);
+      }
+    });
+    function acionarApp(link) {
+      appFoiAcionado = true;
+      paginaSaiuDaFrente = false;
+      location.href = link;
+    }
+
     const id = (location.pathname.match(/\/p\/([^/]+)/) || [])[1];
     const produto = buscarProduto(id);
     if (!produto) {
@@ -59,6 +86,13 @@
       // A bolha só existe no app Android; no iPhone e no computador a compra é só pelo site.
       if (/Android/i.test(navigator.userAgent)) {
         document.getElementById("teste-https").href = linkDoAppPorHttps(produto.id);
+        for (const id of ["abrir-na-bolha", "teste-https"]) {
+          const botao = document.getElementById(id);
+          botao.onclick = (evento) => {
+            evento.preventDefault();
+            acionarApp(botao.href);
+          };
+        }
         document.getElementById("teste-chrome").href = linkNoChrome(produto.id);
         for (const id of ["abrir-na-bolha", "baixar-app", "nota-android", "testes-alternativos"]) {
           document.getElementById(id).classList.remove("escondido");
@@ -70,7 +104,7 @@
         if (!parametros.has("semapp") && !parametros.has("manual")) {
           const reserva = new URL(location.href);
           reserva.searchParams.set("semapp", "1");
-          location.href = linkParaAbrirNaBolha(produto.id, reserva.href);
+          acionarApp(linkParaAbrirNaBolha(produto.id, reserva.href));
         }
       }
 
