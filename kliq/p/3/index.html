@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kliq • produto</title>
+  <link rel="stylesheet" href="/kliq/estilo.css">
+  <script src="/kliq/catalogo.js"></script>
+</head>
+<body>
+  <!--
+    Esta página só aparece quando o link NÃO acionou o app direto:
+    o app não está instalado, o Instagram abriu o link no navegador dele, ou é iPhone/computador.
+    O mesmo arquivo é usado para todos os produtos; o id vem do endereço (/kliq/p/<id>/).
+  -->
+  <main>
+    <div class="cartao" id="produto">
+      <div class="emoji" id="emoji"></div>
+      <h1 id="nome"></h1>
+      <div class="preco" id="preco"></div>
+      <label id="rotulo-da-opcao"></label>
+      <div class="opcoes" id="opcoes"></div>
+      <label for="quantidade">Quantidade</label>
+      <input id="quantidade" type="number" min="1" value="1">
+
+      <a class="botao principal" id="abrir-na-bolha">Abrir na bolha do Kliq</a>
+      <a class="botao" id="comprar-pelo-site">Comprar pelo site</a>
+      <a class="botao" href="/kliq/#baixar">Baixar app de teste (Android)</a>
+      <p class="nota">Você está vendo esta página porque o app do Kliq não abriu sozinho. No Android com o app instalado, toque em "Abrir na bolha do Kliq".</p>
+    </div>
+    <div class="cartao escondido" id="nao-encontrado">
+      <h1>Produto não encontrado</h1>
+      <a class="botao" href="/kliq/">Ver produtos de teste</a>
+    </div>
+  </main>
+  <script>
+    const id = (location.pathname.match(/\/p\/([^/]+)/) || [])[1];
+    const produto = buscarProduto(id);
+    if (!produto) {
+      document.getElementById("produto").classList.add("escondido");
+      document.getElementById("nao-encontrado").classList.remove("escondido");
+    } else {
+      let opcaoEscolhida = produto.opcoes[0];
+      document.title = `Kliq • ${produto.nome}`;
+      document.getElementById("emoji").textContent = produto.emoji;
+      document.getElementById("nome").textContent = produto.nome;
+      document.getElementById("preco").textContent = formatarPreco(produto.precoEmCentavos);
+      document.getElementById("rotulo-da-opcao").textContent = produto.rotuloDaOpcao;
+      document.getElementById("abrir-na-bolha").href = linkParaAbrirNaBolha(produto.id);
+
+      const quantidade = document.getElementById("quantidade");
+      const comprar = document.getElementById("comprar-pelo-site");
+      const atualizarCompra = () => {
+        const valor = Math.max(1, Number.parseInt(quantidade.value, 10) || 1);
+        comprar.href = linkDoCheckout([{ produtoId: produto.id, opcao: opcaoEscolhida, quantidade: valor }]);
+      };
+
+      const opcoes = document.getElementById("opcoes");
+      const desenharOpcoes = () => {
+        opcoes.replaceChildren(...produto.opcoes.map((opcao) => {
+          const botao = document.createElement("button");
+          botao.className = opcao === opcaoEscolhida ? "botao principal" : "botao";
+          botao.textContent = opcao;
+          botao.onclick = () => { opcaoEscolhida = opcao; desenharOpcoes(); atualizarCompra(); };
+          return botao;
+        }));
+      };
+      quantidade.oninput = atualizarCompra;
+      desenharOpcoes();
+      atualizarCompra();
+    }
+  </script>
+</body>
+</html>

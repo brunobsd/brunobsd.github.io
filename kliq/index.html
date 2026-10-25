@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kliq • links de teste</title>
+  <link rel="stylesheet" href="/kliq/estilo.css">
+  <script src="/kliq/catalogo.js"></script>
+</head>
+<body>
+  <main>
+    <h1>Kliq • links de teste</h1>
+    <p class="nota">Página do protótipo. Os produtos são de mentira e nenhum pagamento é real.</p>
+
+    <h2>Produtos</h2>
+    <p>Mande um destes links para você mesmo no direct do Instagram e toque nele durante uma live.</p>
+    <div id="lista"></div>
+
+    <h2 id="baixar">App de teste (Android)</h2>
+    <div class="cartao">
+      <p>Ainda não tem o Kliq? Baixe o app de teste, instale e abra uma vez para liberar a bolha.</p>
+      <a class="botao principal" id="link-do-apk">Baixar app de teste</a>
+      <p class="nota">O Android vai pedir para permitir a instalação de apps fora da Play Store. Isso só é necessário no teste.</p>
+    </div>
+  </main>
+  <script>
+    document.getElementById("link-do-apk").href = ENDERECO_DO_APK;
+    const lista = document.getElementById("lista");
+    for (const produto of produtos) {
+      const endereco = `${location.origin}/kliq/p/${produto.id}/`;
+      const cartao = document.createElement("div");
+      cartao.className = "cartao";
+      cartao.innerHTML = `<div class="emoji"></div><strong></strong><div class="preco"></div><code></code>`;
+      cartao.querySelector(".emoji").textContent = produto.emoji;
+      cartao.querySelector("strong").textContent = produto.nome;
+      cartao.querySelector(".preco").textContent = formatarPreco(produto.precoEmCentavos);
+      cartao.querySelector("code").textContent = endereco;
+      const copiar = document.createElement("button");
+      copiar.className = "botao";
+      copiar.textContent = "Copiar link";
+      copiar.onclick = async () => {
+        await navigator.clipboard.writeText(endereco);
+        copiar.textContent = "Link copiado!";
+      };
+      cartao.append(copiar);
+      lista.append(cartao);
+    }
+  </script>
+</body>
+</html>

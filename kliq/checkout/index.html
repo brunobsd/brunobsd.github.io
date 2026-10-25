@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kliq • finalizar compra</title>
+  <link rel="stylesheet" href="/kliq/estilo.css">
+  <script src="/kliq/catalogo.js"></script>
+</head>
+<body>
+  <main>
+    <h1>Finalizar compra</h1>
+    <p class="nota">Checkout de teste: nada é enviado nem cobrado.</p>
+
+    <div class="cartao">
+      <h2>Seu carrinho</h2>
+      <div id="itens"></div>
+      <div class="total" id="total"></div>
+    </div>
+
+    <form class="cartao" id="formulario">
+      <h2>Entrega</h2>
+      <label for="nome">Nome</label>
+      <input id="nome" required autocomplete="name">
+      <label for="telefone">Telefone</label>
+      <input id="telefone" type="tel" required autocomplete="tel">
+      <label for="endereco">Endereço</label>
+      <textarea id="endereco" rows="3" required autocomplete="street-address"></textarea>
+      <button class="botao principal" type="submit">Pagar com Pix</button>
+    </form>
+
+    <div class="cartao escondido" id="pix">
+      <h2>Pix de teste</h2>
+      <p>Num pagamento real, aqui apareceriam o QR code e o "copia e cola" do Pix.</p>
+      <code>PIX-DE-TESTE-NAO-PAGUE</code>
+      <button class="botao principal" id="simular-pagamento">Simular pagamento confirmado</button>
+    </div>
+
+    <div class="cartao escondido" id="confirmado">
+      <h2>Pagamento confirmado (teste) ✅</h2>
+      <p>O lojista receberia este pedido no painel agora.</p>
+      <a class="botao principal" href="intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.instagram.android;end">Voltar para a live</a>
+    </div>
+
+    <div class="cartao escondido" id="vazio">
+      <p>Seu carrinho está vazio.</p>
+      <a class="botao" href="/kliq/">Ver produtos de teste</a>
+    </div>
+  </main>
+  <script>
+    const itens = lerItensDoCheckout(new URLSearchParams(location.search).get("itens"));
+    if (itens.length === 0) {
+      document.getElementById("vazio").classList.remove("escondido");
+      document.getElementById("formulario").classList.add("escondido");
+    }
+
+    const lista = document.getElementById("itens");
+    let total = 0;
+    for (const item of itens) {
+      const produto = buscarProduto(item.produtoId);
+      const subtotal = produto.precoEmCentavos * item.quantidade;
+      total += subtotal;
+      const linha = document.createElement("div");
+      linha.className = "item";
+      const descricao = document.createElement("span");
+      descricao.textContent = `${produto.emoji} ${item.quantidade}× ${produto.nome} (${item.opcao})`;
+      const valor = document.createElement("strong");
+      valor.textContent = formatarPreco(subtotal);
+      linha.append(descricao, valor);
+      lista.append(linha);
+    }
+    document.getElementById("total").textContent = `Total: ${formatarPreco(total)}`;
+
+    document.getElementById("formulario").onsubmit = (evento) => {
+      evento.preventDefault();
+      document.getElementById("formulario").classList.add("escondido");
+      document.getElementById("pix").classList.remove("escondido");
+    };
+    document.getElementById("simular-pagamento").onclick = () => {
+      document.getElementById("pix").classList.add("escondido");
+      document.getElementById("confirmado").classList.remove("escondido");
+    };
+  </script>
+</body>
+</html>
